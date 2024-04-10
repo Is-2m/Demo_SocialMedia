@@ -19,13 +19,15 @@ class FriendshipDAO {
     }
 
     public boolean addFriendship(User sender, User receiver) {
-        try (Connection connection = dataSource.getConnection()) {
+        try {
+            Connection connection = dataSource.getConnection();
             String sql = "INSERT INTO Friendship (id_sender, id_receiver, state) VALUES (?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setInt(1, sender.getId());
                 statement.setInt(2, receiver.getId());
                 statement.setString(3, FriendshipState.PENDING.name());
                 int rowsAffected = statement.executeUpdate();
+                connection.close();
                 return rowsAffected > 0;
             }
         } catch (Exception e) {
@@ -50,6 +52,7 @@ class FriendshipDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     int friendId = resultSet.getInt("id");
+                    if (friendId == userId) continue; // Skip the current user (friendship with oneself is not allowed
                     String profilePicture = resultSet.getString("profile_picture");
                     String lastName = resultSet.getString("last_name");
                     String firstName = resultSet.getString("first_name");
@@ -78,6 +81,7 @@ class FriendshipDAO {
 
                     friends.add(friend);
                 }
+                conn.close();
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Handle or log the exception properly
@@ -101,6 +105,7 @@ class FriendshipDAO {
                 statement.setInt(1, sender.getId());
                 statement.setInt(2, receiver.getId());
                 int rowsAffected = statement.executeUpdate();
+                connection.close();
                 return rowsAffected > 0;
             }
         } catch (Exception e) {
@@ -117,6 +122,7 @@ class FriendshipDAO {
                 statement.setInt(2, sender.getId());
                 statement.setInt(3, receiver.getId());
                 int rowsAffected = statement.executeUpdate();
+                connection.close();
                 return rowsAffected > 0;
             }
         } catch (Exception e) {

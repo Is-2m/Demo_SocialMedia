@@ -1,9 +1,10 @@
-package ensamc.mbdio.tp2_jee.service;
+package ensamc.mbdio.tp2_jee.controller;
 
 import ensamc.mbdio.tp2_jee.dao.PostDAO;
 import ensamc.mbdio.tp2_jee.dao.UserDAO;
 import ensamc.mbdio.tp2_jee.model.Post;
 import ensamc.mbdio.tp2_jee.model.User;
+import ensamc.mbdio.tp2_jee.service.PostService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,7 +21,7 @@ public class RegisterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Resource(name = "jdbc/ENSAMC-SocialNetwork")
-    private DataSource dataSource;
+    private static DataSource dataSource;
 
     private UserDAO userDbUtil;
 
@@ -68,13 +69,8 @@ public class RegisterServlet extends HttpServlet {
             // set attribute to the request
             request.getSession().setAttribute("currentUser", user);
 
-
-
-            PostDAO postDAO = new PostDAO(dataSource);
-            List<Post> posts = postDAO.getFriendPosts(user);
-
-            request.getSession().setAttribute("friendsPosts", posts);
-            response.sendRedirect("feed.jsp");
+//            PostService.fetchFriendPosts(request,dataSource);
+            response.sendRedirect(request.getContextPath() + "/home/feed.jsp");
         } catch (Exception e) {
             throw new ServletException(e);
         }

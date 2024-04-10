@@ -22,6 +22,7 @@ public class MessageDAO {
                 statement.setInt(1, resourceId);
                 statement.setString(2, message.getContent());
                 int rowsAffected = statement.executeUpdate();
+                connection.close();
                 return rowsAffected > 0;
             }
         } catch (Exception e) {
@@ -38,6 +39,7 @@ public class MessageDAO {
                 try (ResultSet resultSet = statement.executeQuery()) {
                     if (resultSet.next()) {
                         String content = resultSet.getString("content");
+                        connection.close();
                         return new Message(content);
                     }
                 }

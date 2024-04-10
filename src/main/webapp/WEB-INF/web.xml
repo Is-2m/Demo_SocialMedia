@@ -6,8 +6,30 @@
 
     <display-name>ENSAMC-SocialNetwork</display-name>
     <welcome-file-list>
-        <welcome-file>LoginServlet</welcome-file>
-<!--        <welcome-file>index.jsp</welcome-file>-->
+        <welcome-file>login.jsp</welcome-file>
+        <!--        <welcome-file>index.jsp</welcome-file>-->
     </welcome-file-list>
-
+    <filter>
+        <filter-name>AuthenticationFilter</filter-name>
+        <filter-class>ensamc.mbdio.tp2_jee.middleware.AuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthenticationFilter</filter-name>
+        <url-pattern>/home/*</url-pattern>
+    </filter-mapping>
+<!--    <filter-mapping>-->
+<!--        <filter-name>AuthenticationFilter</filter-name>-->
+<!--        <url-pattern>/login.jsp</url-pattern> &lt;!&ndash; Exclude login.jsp &ndash;&gt;-->
+<!--        <dispatcher>REQUEST</dispatcher>-->
+<!--    </filter-mapping>-->
+<!--    <filter-mapping>-->
+<!--        <filter-name>AuthenticationFilter</filter-name>-->
+<!--        <url-pattern>/register.jsp</url-pattern> &lt;!&ndash; Exclude register.jsp &ndash;&gt;-->
+<!--        <dispatcher>REQUEST</dispatcher>-->
+<!--    </filter-mapping>-->
+<!--        <filter-mapping>-->
+<!--        <filter-name>AuthenticationFilter</filter-name>-->
+<!--        <servlet-name>LoginServlet</servlet-name>  &lt;!&ndash; Exclude servlet named LoginServlet &ndash;&gt;-->
+<!--        <dispatcher>REQUEST</dispatcher>-->
+<!--    </filter-mapping>-->
 </web-app>

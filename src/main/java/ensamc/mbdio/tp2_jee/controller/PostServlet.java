@@ -1,9 +1,11 @@
-package ensamc.mbdio.tp2_jee.service;
+package ensamc.mbdio.tp2_jee.controller;
 
 import ensamc.mbdio.tp2_jee.dao.PostDAO;
 import ensamc.mbdio.tp2_jee.model.Message;
 import ensamc.mbdio.tp2_jee.model.Post;
+import ensamc.mbdio.tp2_jee.model.ResourceModel;
 import ensamc.mbdio.tp2_jee.model.User;
+import ensamc.mbdio.tp2_jee.service.PostService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +24,7 @@ public class PostServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Resource(name = "jdbc/ENSAMC-SocialNetwork")
-    private DataSource dataSource;
+    private static DataSource dataSource;
 
     private PostDAO postDAO;
 
@@ -33,11 +36,12 @@ public class PostServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException(e);
         }
+
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Handle GET requests here
+
     }
 
     @Override
@@ -67,19 +71,25 @@ public class PostServlet extends HttpServlet {
         p.setDate(System.currentTimeMillis() / 1000);
         p.setUser((User) request.getSession().getAttribute("currentUser"));
 
-        List<ensamc.mbdio.tp2_jee.model.Resource> resources = new ArrayList<>();
+        List<ResourceModel> resourceModels = new ArrayList<>();
         Message m = new Message();
         m.setContent(request.getParameter("content"));
         m.setType(ensamc.mbdio.tp2_jee.model.ResourceType.MESSAGE);
-        resources.add(m);
-        p.setResources(resources);
+//        m.setName();
+        resourceModels.add(m);
+        p.setResources(resourceModels);
+
+
         if (postDAO.createPost(p)) {
-            System.out.println("Post created successfully");
-//            response.sendRedirect("home.jsp");
+
+//            PostService.fetchFriendPosts(request, dataSource);
+
+            response.sendRedirect(request.getContextPath() + "/home/feed.jsp");
         } else {
             System.out.println("Failed to create post");
 //            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to create post");
         }
 
     }
+
 }

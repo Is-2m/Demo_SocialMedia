@@ -1,7 +1,7 @@
 package ensamc.mbdio.tp2_jee.dao;
 
 import ensamc.mbdio.tp2_jee.model.Message;
-import ensamc.mbdio.tp2_jee.model.Resource;
+import ensamc.mbdio.tp2_jee.model.ResourceModel;
 import ensamc.mbdio.tp2_jee.model.ResourceType;
 
 import java.sql.Connection;
@@ -9,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
 
@@ -22,13 +21,13 @@ public class ResourceDAO {
         messageDAO = new MessageDAO(dataSource); // Initialize other DAOs as needed
     }
 
-    public boolean createResource(int postId, Resource resource) {
+    public boolean createResource(int postId, ResourceModel resourceModel) {
         try (Connection connection = dataSource.getConnection()) {
             String sql = "INSERT INTO Resource (id_post, name, type) VALUES (?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 statement.setInt(1, postId);
-                statement.setString(2, resource.getName());
-                statement.setString(3, resource.getType().name());
+                statement.setString(2, resourceModel.getName());
+                statement.setString(3, resourceModel.getType().name());
                 int rowsAffected = statement.executeUpdate();
                 if (rowsAffected > 0) {
                     int resourceId;
@@ -39,9 +38,11 @@ public class ResourceDAO {
                             return false;
                         }
                     }
-                    switch (resource.getType()) {
+                    switch (resourceModel.getType()) {
                         case MESSAGE:
-                            return messageDAO.createMessage(resourceId, (Message) resource);
+                            boolean res = messageDAO.createMessage(resourceId, (Message) resourceModel);
+                            connection.close();
+                            return  res;
                         case WEB_LINK:
                             // Implement web link creation
                             return true;
@@ -60,8 +61,8 @@ public class ResourceDAO {
         return false;
     }
 
-    public List<Resource> getResource(int postId) {
-        List<Resource> res = new ArrayList<>();
+    public List<ResourceModel> getResource(int postId) {
+        List<ResourceModel> res = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             String sql = "SELECT * FROM Resource WHERE id_post = ?";
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -74,6 +75,8 @@ public class ResourceDAO {
                         switch (ResourceType.valueOf(type)) {
                             case MESSAGE:
                                 Message message = messageDAO.getMessage(id);
+                                message.setId(id);
+                                message.setType(ResourceType.MESSAGE);
                                 message.setName(name);
                                 res.add(message);
                                 break;
@@ -86,7 +89,9 @@ public class ResourceDAO {
                         }
                     }
                 }
+                connection.close();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
 

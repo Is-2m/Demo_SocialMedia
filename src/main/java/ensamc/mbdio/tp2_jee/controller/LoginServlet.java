@@ -1,9 +1,10 @@
-package ensamc.mbdio.tp2_jee.service;
+package ensamc.mbdio.tp2_jee.controller;
 
 import ensamc.mbdio.tp2_jee.dao.PostDAO;
 import ensamc.mbdio.tp2_jee.dao.UserDAO;
 import ensamc.mbdio.tp2_jee.model.Post;
 import ensamc.mbdio.tp2_jee.model.User;
+import ensamc.mbdio.tp2_jee.service.PostService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,7 +22,7 @@ public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Resource(name = "jdbc/ENSAMC-SocialNetwork")
-    private DataSource dataSource;
+    private static DataSource dataSource;
 
     private UserDAO userDbUtil;
 
@@ -38,15 +39,13 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //    check if the user is already logged in
+//            check if the user is already logged in
         User currentUser = (User) req.getSession().getAttribute("currentUser");
         if (currentUser != null) {
-            PostDAO postDAO = new PostDAO(dataSource);
-            List<Post> posts = postDAO.getFriendPosts(currentUser);
-            req.getSession().setAttribute("friendsPosts", posts);
-            resp.sendRedirect("feed.jsp");
+//            PostService.fetchFriendPosts(req,dataSource);
+            resp.sendRedirect(req.getContextPath() + "/home/feed.jsp");
         } else {
-            resp.sendRedirect("login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/login.jsp");
         }
 
     }
@@ -83,16 +82,13 @@ public class LoginServlet extends HttpServlet {
 
 
         if (user == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         } else {
             request.getSession().setAttribute("currentUser", user);
-            PostDAO postDAO = new PostDAO(dataSource);
-            List<Post> posts = postDAO.getFriendPosts(user);
 
-
-            request.getSession().setAttribute("friendsPosts", posts);
-            response.sendRedirect("feed.jsp");
+//            PostService.fetchFriendPosts(request,dataSource);
+            response.sendRedirect(request.getContextPath() + "/home/feed.jsp");
         }
 
     }
@@ -112,7 +108,7 @@ public class LoginServlet extends HttpServlet {
             response.setDateHeader("Expires", 0); // Proxies.
 
 
-            response.sendRedirect("login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,8 +1,10 @@
 package ensamc.mbdio.tp2_jee.dao;
 
 import ensamc.mbdio.tp2_jee.model.Post;
-import ensamc.mbdio.tp2_jee.model.Resource;
+import ensamc.mbdio.tp2_jee.model.ResourceModel;
 import ensamc.mbdio.tp2_jee.model.User;
+
+import jakarta.annotation.Resource;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -11,7 +13,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sql.DataSource;
 
 public class PostDAO {
     private DataSource dataSource;
@@ -36,8 +37,8 @@ public class PostDAO {
                     if (generatedKeys.next()) {
                         int postId = generatedKeys.getInt(1);
                         post.setId(postId);
-                        for (Resource resource : post.getResources()) {
-                            boolean resourceCreated = resourceDAO.createResource(postId, resource);
+                        for (ResourceModel resourceModel : post.getResources()) {
+                            boolean resourceCreated = resourceDAO.createResource(postId, resourceModel);
                             if (!resourceCreated) {
                                 return false;
                             }
@@ -59,11 +60,14 @@ public class PostDAO {
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setInt(1, post.getId());
                 int rowsAffected = statement.executeUpdate();
+                connection.close();
                 return rowsAffected > 0;
             }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+
         }
     }
 
@@ -87,9 +91,10 @@ public class PostDAO {
                 int userId = myRs.getInt("id_user");
                 User user = userDAO.getUser(userId);
                 Long date = myRs.getLong("date");
-                List<Resource> resources = resourceDAO.getResource(id);
-                post = new Post(id, user, date, resources);
+                List<ResourceModel> resourceModels = resourceDAO.getResource(id);
+                post = new Post(id, user, date, resourceModels);
             }
+            myConn.close();
             return post;
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,10 +102,33 @@ public class PostDAO {
         }
     }
 
-    public List<Post> getFriendPosts(User user) {
+    public List<Post> getPostByUser(User poster) {
+        List<Post> posts = new ArrayList<>();
+        Connection myConn = null;
+        PreparedStatement myStmt = null;
+        ResultSet myRs = null;
+        try {
+            myConn = dataSource.getConnection();
+            String sql = "select * from Post where id_user=?";
+            myStmt = myConn.prepareStatement(sql);
+            myStmt.setInt(1, poster.getId());
+            myRs = myStmt.executeQuery();
+            while (myRs.next()) {
+                int postId = myRs.getInt("id");
+                Long date = myRs.getLong("date");
+                List<ResourceModel> resourceModels = resourceDAO.getResource(postId);
+                Post post = new Post(postId, poster, date, resourceModels);
+                posts.add(post);
+            }
+            myConn.close();
+            return posts;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public List<Post> getFriendPosts(int currentUserId) {
         List<Post> friendPosts = new ArrayList<>();
-
-
         String sql = "SELECT p.* " +
                 "FROM Post p " +
                 "INNER JOIN Friendship f ON (p.id_user = f.id_sender OR p.id_user = f.id_receiver) " +
@@ -109,24 +137,35 @@ public class PostDAO {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement statement = conn.prepareStatement(sql)) {
 
-            statement.setInt(1, user.getId());
-            statement.setInt(2, user.getId());
+            statement.setInt(1, currentUserId);
+            statement.setInt(2, currentUserId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    int userId = resultSet.getInt("id_user");
                     int postId = resultSet.getInt("id");
-                    User poster = userId == user.getId() ? user : userDAO.getUser(userId);
+                    User user = userDAO.getUser(resultSet.getInt("id_user"));
                     Long date = resultSet.getLong("date");
-                    List<Resource> resources = resourceDAO.getResource(postId);
-
-                    Post post = new Post(postId, poster, date, resources);
+                    List<ResourceModel> resourceModels = resourceDAO.getResource(postId);
+                    Post post = new Post(postId, user, date, resourceModels);
                     friendPosts.add(post);
                 }
+                conn.close();
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Handle or log the exception properly
         }
+
+        return friendPosts;
+    }
+
+    public List<Post> getFriendPosts(User user) {
+        List<Post> friendPosts = new ArrayList<>();
+        for (User friend : user.getFriends()) {
+            List<Post> lst = getPostByUser(friend);
+            if (lst != null && !lst.isEmpty())
+                friendPosts.addAll(lst);
+        }
+        friendPosts.addAll(getPostByUser(user));
 
         return friendPosts;
     }

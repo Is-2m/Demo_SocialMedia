@@ -1,6 +1,6 @@
 package ensamc.mbdio.tp2_jee.model;
 
-public class Message extends Resource {
+public class Message extends ResourceModel {
     private String content;
 
     public Message() {

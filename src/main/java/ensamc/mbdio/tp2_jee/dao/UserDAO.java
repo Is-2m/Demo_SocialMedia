@@ -54,6 +54,7 @@ public class UserDAO {
                 user = new User(id, firstName, lastName, login, pass, phone, address, birthDate,
                         gender, aboutMe, otherName, favoriteQuote, friends, profilePicture);
             }
+            myConn.close();
             return user;
         } catch (Exception e) {
             e.printStackTrace();
@@ -96,6 +97,7 @@ public class UserDAO {
                 user = new User(id, firstName, lastName, login, pass, phone, address, birthDate,
                         gender, aboutMe, otherName, favoriteQuote, friends, profilePicture);
             }
+            myConn.close();
             return user;
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,6 +130,7 @@ public class UserDAO {
             } else {
                 throw new Exception("Creating user failed, no ID obtained.");
             }
+            myConn.close();
             return user;
         } catch (Exception e) {
             e.printStackTrace();
@@ -164,6 +167,7 @@ public class UserDAO {
 
             // execute sql insert
             myStmt.execute();
+            myConn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -186,6 +190,7 @@ public class UserDAO {
             myStmt.setInt(2, user.getId());
             // execute sql insert
             myStmt.execute();
+            myConn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

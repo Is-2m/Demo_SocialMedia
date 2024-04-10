@@ -1,20 +1,20 @@
 package ensamc.mbdio.tp2_jee.model;
-public abstract class Resource {
+public abstract class ResourceModel {
     private int id;
     private String name;
     private Post post;
     private ResourceType type;
 
-    public Resource() {
+    public ResourceModel() {
     }
 
-    public Resource(String name, Post post, ResourceType type) {
+    public ResourceModel(String name, Post post, ResourceType type) {
         this.name = name;
         this.post = post;
         this.type = type;
     }
 
-    public Resource(int id, String name, Post post, ResourceType type) {
+    public ResourceModel(int id, String name, Post post, ResourceType type) {
         this.id = id;
         this.name = name;
         this.post = post;

@@ -1,4 +1,4 @@
-package ensamc.mbdio.tp2_jee.service;
+package ensamc.mbdio.tp2_jee.controller;
 
 import ensamc.mbdio.tp2_jee.dao.UserDAO;
 import ensamc.mbdio.tp2_jee.model.User;
