@@ -5,6 +5,7 @@ import ensamc.mbdio.tp2_jee.model.Message;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Date;
 import javax.sql.DataSource;
 
@@ -16,38 +17,66 @@ public class MessageDAO {
     }
 
     public boolean createMessage(int resourceId, Message message) {
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        boolean result = false;
+        try {
+            connection = dataSource.getConnection();
             String sql = "INSERT INTO Message (id, content) VALUES (?, ?)";
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setInt(1, resourceId);
-                statement.setString(2, message.getContent());
-                int rowsAffected = statement.executeUpdate();
-                connection.close();
-                return rowsAffected > 0;
-            }
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, resourceId);
+            statement.setString(2, message.getContent());
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            close(connection, statement, resultSet);
         }
     }
 
     public Message getMessage(int messageId) {
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        Message message = null;
+        try {
+            connection = dataSource.getConnection();
             String sql = "SELECT * FROM Message WHERE id = ?";
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setInt(1, messageId);
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    if (resultSet.next()) {
-                        String content = resultSet.getString("content");
-                        connection.close();
-                        return new Message(content);
-                    }
-                }
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, messageId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                String content = resultSet.getString("content");
+                message = new Message(content);
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            close(connection, statement, resultSet);
+        }
+        return message;
+    }
+
+    private void close(Connection connection, Statement statement, ResultSet resultSet) {
+        try {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
-        return null;
     }
 }

@@ -26,48 +26,60 @@ public class PostDAO {
     }
 
     public boolean createPost(Post post) {
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = dataSource.getConnection();
             String sql = "INSERT INTO Post (id_user, date) VALUES (?, ?)";
-            try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                statement.setInt(1, post.getUser().getId());
-                statement.setLong(2, post.getDate());
-                int rowsAffected = statement.executeUpdate();
-                if (rowsAffected > 0) {
-                    ResultSet generatedKeys = statement.getGeneratedKeys();
-                    if (generatedKeys.next()) {
-                        int postId = generatedKeys.getInt(1);
-                        post.setId(postId);
-                        for (ResourceModel resourceModel : post.getResources()) {
-                            boolean resourceCreated = resourceDAO.createResource(postId, resourceModel);
-                            if (!resourceCreated) {
-                                return false;
-                            }
+
+            statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            statement.setInt(1, post.getUser().getId());
+            statement.setLong(2, post.getDate());
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                resultSet = statement.getGeneratedKeys();
+                if (resultSet.next()) {
+                    int postId = resultSet.getInt(1);
+                    post.setId(postId);
+                    for (ResourceModel resourceModel : post.getResources()) {
+                        boolean resourceCreated = resourceDAO.createResource(postId, resourceModel);
+                        if (!resourceCreated) {
+                            return false;
                         }
-                        return true;
                     }
+                    return true;
                 }
             }
-        } catch (Exception e) {
+
+        } catch (
+                Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            close(connection, statement, resultSet);
         }
         return false;
     }
 
     public boolean deletePost(Post post) {
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = dataSource.getConnection();
             String sql = "DELETE FROM Post WHERE id = ?";
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setInt(1, post.getId());
-                int rowsAffected = statement.executeUpdate();
-                connection.close();
-                return rowsAffected > 0;
-            }
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, post.getId());
+            int rowsAffected = statement.executeUpdate();
+
+            return rowsAffected > 0;
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         } finally {
-
+            close(connection, statement, resultSet);
         }
     }
 
@@ -94,11 +106,13 @@ public class PostDAO {
                 List<ResourceModel> resourceModels = resourceDAO.getResource(id);
                 post = new Post(id, user, date, resourceModels);
             }
-            myConn.close();
+
             return post;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            close(myConn, myStmt, myRs);
         }
     }
 
@@ -120,39 +134,50 @@ public class PostDAO {
                 Post post = new Post(postId, poster, date, resourceModels);
                 posts.add(post);
             }
-            myConn.close();
+
             return posts;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            // Close resources
+            close(myConn, myStmt, myRs);
         }
     }
+
     public List<Post> getFriendPosts(int currentUserId) {
         List<Post> friendPosts = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         String sql = "SELECT p.* " +
                 "FROM Post p " +
                 "INNER JOIN Friendship f ON (p.id_user = f.id_sender OR p.id_user = f.id_receiver) " +
                 "WHERE (f.id_sender = ? OR f.id_receiver = ?) AND f.state = 'APPROVED'";
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement statement = conn.prepareStatement(sql)) {
-
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement(sql);
             statement.setInt(1, currentUserId);
             statement.setInt(2, currentUserId);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    int postId = resultSet.getInt("id");
-                    User user = userDAO.getUser(resultSet.getInt("id_user"));
-                    Long date = resultSet.getLong("date");
-                    List<ResourceModel> resourceModels = resourceDAO.getResource(postId);
-                    Post post = new Post(postId, user, date, resourceModels);
-                    friendPosts.add(post);
-                }
-                conn.close();
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int postId = resultSet.getInt("id");
+                User user = userDAO.getUser(resultSet.getInt("id_user"));
+                Long date = resultSet.getLong("date");
+                List<ResourceModel> resourceModels = resourceDAO.getResource(postId);
+                Post post = new Post(postId, user, date, resourceModels);
+                friendPosts.add(post);
             }
-        } catch (SQLException e) {
+
+
+        } catch (
+                SQLException e) {
             e.printStackTrace(); // Handle or log the exception properly
+        } finally {
+            // Close resources
+            close(connection, statement, resultSet);
         }
 
         return friendPosts;
@@ -168,5 +193,21 @@ public class PostDAO {
         friendPosts.addAll(getPostByUser(user));
 
         return friendPosts;
+    }
+
+    private void close(Connection connection, Statement statement, ResultSet resultSet) {
+        try {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

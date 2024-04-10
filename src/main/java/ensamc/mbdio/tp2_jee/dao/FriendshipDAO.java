@@ -4,10 +4,7 @@ import ensamc.mbdio.tp2_jee.model.FriendshipState;
 import ensamc.mbdio.tp2_jee.model.User;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,72 +16,84 @@ class FriendshipDAO {
     }
 
     public boolean addFriendship(User sender, User receiver) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
         try {
-            Connection connection = dataSource.getConnection();
+            connection = dataSource.getConnection();
             String sql = "INSERT INTO Friendship (id_sender, id_receiver, state) VALUES (?, ?, ?)";
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setInt(1, sender.getId());
-                statement.setInt(2, receiver.getId());
-                statement.setString(3, FriendshipState.PENDING.name());
-                int rowsAffected = statement.executeUpdate();
-                connection.close();
-                return rowsAffected > 0;
-            }
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, sender.getId());
+            statement.setInt(2, receiver.getId());
+            statement.setString(3, FriendshipState.PENDING.name());
+            int rowsAffected = statement.executeUpdate();
+
+            return rowsAffected > 0;
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            close(connection, statement, resultSet);
         }
     }
 
     public List<User> getFriends(int userId) {
         List<User> friends = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         String sql = "SELECT u.* " +
                 "FROM User u " +
                 "INNER JOIN Friendship f ON (u.id = f.id_sender OR u.id = f.id_receiver) " +
                 "WHERE (f.id_sender = ? OR f.id_receiver = ?) AND f.state = 'APPROVED'";
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement statement = conn.prepareStatement(sql)) {
-
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement(sql);
             statement.setInt(1, userId);
             statement.setInt(2, userId);
 
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    int friendId = resultSet.getInt("id");
-                    if (friendId == userId) continue; // Skip the current user (friendship with oneself is not allowed
-                    String profilePicture = resultSet.getString("profile_picture");
-                    String lastName = resultSet.getString("last_name");
-                    String firstName = resultSet.getString("first_name");
-                    String email = resultSet.getString("email");
-                    String birthDate = resultSet.getString("birth_date");
-                    String phone = resultSet.getString("phone");
-                    String gender = resultSet.getString("gender");
-                    String address = resultSet.getString("address");
-                    String aboutMe = resultSet.getString("about_me");
-                    String otherName = resultSet.getString("other_name");
-                    String favoriteQuote = resultSet.getString("favorite_quote");
-                    // Instantiate User object
-                    User friend = new User();
-                    friend.setId(friendId);
-                    friend.setProfilePicture(profilePicture);
-                    friend.setLastName(lastName);
-                    friend.setFirstName(firstName);
-                    friend.setEmail(email);
-                    friend.setBirthDate(birthDate);
-                    friend.setPhone(phone);
-                    friend.setGender(gender);
-                    friend.setAddress(address);
-                    friend.setAboutMe(aboutMe);
-                    friend.setOtherName(otherName);
-                    friend.setFavoriteQuote(favoriteQuote);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int friendId = resultSet.getInt("id");
+                if (friendId == userId) continue; // Skip the current user (friendship with oneself is not allowed
+                String profilePicture = resultSet.getString("profile_picture");
+                String lastName = resultSet.getString("last_name");
+                String firstName = resultSet.getString("first_name");
+                String email = resultSet.getString("email");
+                String birthDate = resultSet.getString("birth_date");
+                String phone = resultSet.getString("phone");
+                String gender = resultSet.getString("gender");
+                String address = resultSet.getString("address");
+                String aboutMe = resultSet.getString("about_me");
+                String otherName = resultSet.getString("other_name");
+                String favoriteQuote = resultSet.getString("favorite_quote");
+                // Instantiate User object
+                User friend = new User();
+                friend.setId(friendId);
+                friend.setProfilePicture(profilePicture);
+                friend.setLastName(lastName);
+                friend.setFirstName(firstName);
+                friend.setEmail(email);
+                friend.setBirthDate(birthDate);
+                friend.setPhone(phone);
+                friend.setGender(gender);
+                friend.setAddress(address);
+                friend.setAboutMe(aboutMe);
+                friend.setOtherName(otherName);
+                friend.setFavoriteQuote(favoriteQuote);
 
-                    friends.add(friend);
-                }
-                conn.close();
+                friends.add(friend);
             }
-        } catch (SQLException e) {
+
+
+        } catch (
+                SQLException e) {
             e.printStackTrace(); // Handle or log the exception properly
+        } finally {
+            close(connection, statement, resultSet);
         }
 
         return friends;
@@ -99,35 +108,62 @@ class FriendshipDAO {
     }
 
     public boolean removeFriendship(User sender, User receiver) {
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = dataSource.getConnection();
             String sql = "DELETE FROM Friendship WHERE id_sender = ? AND id_receiver = ?";
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setInt(1, sender.getId());
-                statement.setInt(2, receiver.getId());
-                int rowsAffected = statement.executeUpdate();
-                connection.close();
-                return rowsAffected > 0;
-            }
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, sender.getId());
+            statement.setInt(2, receiver.getId());
+            int rowsAffected = statement.executeUpdate();
+
+            return rowsAffected > 0;
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            close(connection, statement, resultSet);
         }
     }
 
     private boolean updateFriendshipState(User sender, User receiver, FriendshipState state) {
-        try (Connection connection = dataSource.getConnection()) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = dataSource.getConnection();
             String sql = "UPDATE Friendship SET state = ? WHERE id_sender = ? AND id_receiver = ?";
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setString(1, state.name());
-                statement.setInt(2, sender.getId());
-                statement.setInt(3, receiver.getId());
-                int rowsAffected = statement.executeUpdate();
-                connection.close();
-                return rowsAffected > 0;
-            }
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, state.name());
+            statement.setInt(2, sender.getId());
+            statement.setInt(3, receiver.getId());
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            close(connection, statement, resultSet);
+        }
+    }
+
+    private void close(Connection connection, Statement statement, ResultSet resultSet) {
+        try {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
