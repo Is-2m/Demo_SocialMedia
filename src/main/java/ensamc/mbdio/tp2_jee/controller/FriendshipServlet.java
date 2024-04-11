@@ -64,11 +64,14 @@ public class FriendshipServlet extends HttpServlet {
         User sender = (User) req.getSession().getAttribute("currentUser");
         int receiverId = Integer.parseInt(req.getParameter("user_id"));
         User receiver = userDAO.getUser(receiverId);
-        friendshipService.acceptRequest(sender, receiver);
-        resp.setContentType("text/javascript");
+        friendshipService.acceptRequest(sender, receiver, req);
 
-        String referrer = req.getHeader("referer");
-        System.out.println("the servlet was being called from here: " + referrer);
+        String[] referrer = req.getHeader("referer").split("/");
+        try {
+            resp.sendRedirect(req.getContextPath() + "/home/" + referrer[referrer.length - 1]);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
 
     }
@@ -77,17 +80,29 @@ public class FriendshipServlet extends HttpServlet {
         User sender = (User) req.getSession().getAttribute("currentUser");
         int receiverId = Integer.parseInt(req.getParameter("user_id"));
         User receiver = userDAO.getUser(receiverId);
-        System.out.println("FriendshipServlet.sendRequest");
-        System.out.println("sender = " + sender);
-        System.out.println("receiver = " + receiver);
+
         friendshipService.sendRequest(sender, receiver);
+
+        String[] referrer = req.getHeader("referer").split("/");
+        try {
+            resp.sendRedirect(req.getContextPath() + "/home/" + referrer[referrer.length - 1]);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void removeFriendship(HttpServletRequest req, HttpServletResponse resp) {
         User user = (User) req.getSession().getAttribute("currentUser");
         int receiverId = Integer.parseInt(req.getParameter("user_id"));
         User receiver = userDAO.getUser(receiverId);
-        friendshipService.removeFriendship(user, receiver);
+        friendshipService.removeFriendship(user, receiver, req);
+
+        String[] referrer = req.getHeader("referer").split("/");
+        try {
+            resp.sendRedirect(req.getContextPath() + "/home/" + referrer[referrer.length - 1]);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

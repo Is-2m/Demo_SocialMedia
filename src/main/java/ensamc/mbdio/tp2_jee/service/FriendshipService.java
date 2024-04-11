@@ -20,12 +20,16 @@ public class FriendshipService {
     }
 
 
-    public boolean acceptRequest(User sender, User receiver) {
+    public boolean acceptRequest(User sender, User receiver, HttpServletRequest request) {
         if (friendshipDAO.acceptFriendship(sender, receiver)) {
             String senderName = receiver.getFirstName() + " " + receiver.getLastName();
             String receiverName = receiver.getFirstName() + " " + receiver.getLastName();
             String subject = "It's official! You're now friends with " + senderName + " on ENSAMC Social Network!";
             MailSender.sendEmail(receiver.getEmail(), subject, MailSender.friendRequestAcceptedEmail(receiverName, senderName, "#"));
+
+            User user = (User) request.getSession().getAttribute("currentUser");
+            user.setFriends(friendshipDAO.getFriends(user.getId()));
+            request.getSession().setAttribute("currentUser", user);
             return true;
         }
         return false;
@@ -41,7 +45,10 @@ public class FriendshipService {
         return false;
     }
 
-    public boolean removeFriendship(User sender, User receiver) {
+    public boolean removeFriendship(User sender, User receiver, HttpServletRequest request) {
+        User user = (User) request.getSession().getAttribute("currentUser");
+        user.setFriends(friendshipDAO.getFriends(user.getId()));
+        request.getSession().setAttribute("currentUser", user);
         return friendshipDAO.removeFriendship(sender, receiver);
     }
 

@@ -95,10 +95,10 @@ public class UserDAO {
                 String aboutMe = myRs.getString("about_me");
                 String otherName = myRs.getString("other_name");
                 String favoriteQuote = myRs.getString("favorite_quote");
-                List<User> friends = friendshipDAO.getFriends(userID);
+//                List<User> friends = friendshipDAO.getFriends(userID);
 
                 user = new User(id, firstName, lastName, login, pass, phone, address, birthDate,
-                        gender, aboutMe, otherName, favoriteQuote, friends, profilePicture);
+                        gender, aboutMe, otherName, favoriteQuote, profilePicture);
             }
 
             return user;
