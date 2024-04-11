@@ -43,7 +43,7 @@ public class LoginServlet extends HttpServlet {
         User currentUser = (User) req.getSession().getAttribute("currentUser");
         if (currentUser != null) {
 //            PostService.fetchFriendPosts(req,dataSource);
-            resp.sendRedirect(req.getContextPath() + "/home/feed.jsp");
+            resp.sendRedirect(req.getContextPath() + "/home/index.jsp");
         } else {
             resp.sendRedirect(req.getContextPath() + "/login.jsp");
         }
@@ -52,6 +52,8 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String referrer = req.getHeader("referer");
+        System.out.println("the servlet was being called from here: " + referrer);
         try {
             // read the "command" parameter
             String op = req.getParameter("operation");
@@ -88,7 +90,7 @@ public class LoginServlet extends HttpServlet {
             request.getSession().setAttribute("currentUser", user);
 
 //            PostService.fetchFriendPosts(request,dataSource);
-            response.sendRedirect(request.getContextPath() + "/home/feed.jsp");
+            response.sendRedirect(request.getContextPath() + "/home/index.jsp");
         }
 
     }

@@ -84,7 +84,7 @@ public class PostServlet extends HttpServlet {
 
 //            PostService.fetchFriendPosts(request, dataSource);
 
-            response.sendRedirect(request.getContextPath() + "/home/feed.jsp");
+            response.sendRedirect(request.getContextPath() + "/home/index.jsp");
         } else {
             System.out.println("Failed to create post");
 //            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to create post");

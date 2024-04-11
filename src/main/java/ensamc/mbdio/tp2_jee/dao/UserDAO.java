@@ -1,12 +1,12 @@
 package ensamc.mbdio.tp2_jee.dao;
 
+import ensamc.mbdio.tp2_jee.dto.UserDTO;
+import ensamc.mbdio.tp2_jee.model.Friendship;
+import ensamc.mbdio.tp2_jee.model.FriendshipState;
 import ensamc.mbdio.tp2_jee.model.User;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -214,30 +214,70 @@ public class UserDAO {
         }
     }
 
-    public List<User> searchUsers(String searchTerm) {
-        List<User> searchResults = new ArrayList<>();
+    public List<UserDTO> searchUsersWithFriendships(User currentUser, String searchTerm) {
+        List<UserDTO> searchResults = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
 
         try {
             connection = dataSource.getConnection();
-            String sql = "SELECT * FROM User WHERE last_name LIKE ? OR first_name LIKE ? OR other_name LIKE ?";
+            String sql = "SELECT u.*, f.id_sender, f.id_receiver, f.state " +
+                    "FROM User u " +
+                    "LEFT JOIN Friendship f ON (u.id = f.id_sender OR u.id = f.id_receiver) AND (f.id_sender = ? OR f.id_receiver = ?) " +
+                    "WHERE u.last_name LIKE ? OR u.first_name LIKE ? OR u.other_name LIKE ?";
             statement = connection.prepareStatement(sql);
             String likeTerm = "%" + searchTerm + "%";
-            statement.setString(1, likeTerm);
-            statement.setString(2, likeTerm);
+            statement.setInt(1, currentUser.getId());
+            statement.setInt(2, currentUser.getId());
             statement.setString(3, likeTerm);
+            statement.setString(4, likeTerm);
+            statement.setString(5, likeTerm);
             resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
                 // Populate User object from result set
-                User user = new User();
+                if (resultSet.getInt("id") == currentUser.getId()) {
+                    continue;
+                }
+                UserDTO user = new UserDTO();
                 user.setId(resultSet.getInt("id"));
                 user.setLastName(resultSet.getString("last_name"));
                 user.setFirstName(resultSet.getString("first_name"));
                 user.setOtherName(resultSet.getString("other_name"));
-                // Populate other attributes as needed
+                user.setFavoriteQuote(resultSet.getString("favorite_quote"));
+                user.setBirthDate(resultSet.getString("birth_date"));
+                user.setPhone(resultSet.getString("phone"));
+                user.setGender(resultSet.getString("gender"));
+                user.setEmail(resultSet.getString("email"));
+                user.setAboutMe(resultSet.getString("about_me"));
+                user.setProfilePicture(resultSet.getString("profile_picture"));
+                user.setAddress(resultSet.getString("address"));
+
+                // Populate Friendship object
+                Friendship friendship = new Friendship();
+                friendship.setSender(resultSet.getInt("id_sender") == currentUser.getId() ? currentUser : user.toUser());
+                friendship.setReceiver(resultSet.getInt("id_receiver") == currentUser.getId() ? currentUser : user.toUser());
+                String state = resultSet.getString("state") == null ? "" : resultSet.getString("state");
+                switch (state) {
+                    case "APPROVED":
+                        friendship.setState(FriendshipState.APPROVED);
+                        break;
+                    case "PENDING":
+                        friendship.setState(FriendshipState.PENDING);
+                        break;
+                    case "DENIED":
+                        friendship.setState(FriendshipState.DENIED);
+                        break;
+                    default:
+                        friendship.setState(FriendshipState.None);
+                        break;
+                }
+
+                // Add the Friendship object to the User's friendships
+                user.setFriendship(friendship);
+
+                // Add the User to the search results
                 searchResults.add(user);
             }
         } catch (Exception e) {

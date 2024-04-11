@@ -26,7 +26,6 @@ public class PostService {
                 return o1.getDate() < o2.getDate() ? 1 : -1;
             }
         });
-
         req.getSession().setAttribute("friendsPosts", posts);
     }
 }

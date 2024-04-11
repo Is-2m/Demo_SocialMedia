@@ -1,4 +1,6 @@
-<%--
+<%@ page import="jakarta.annotation.Resource" %>
+<%@ page import="javax.sql.DataSource" %>
+<%@ page import="static ensamc.mbdio.tp2_jee.service.FriendshipService.fetchFriendRequests" %><%--
   Created by IntelliJ IDEA.
   User: is2m
   Date: 2024-04-07
@@ -9,13 +11,21 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="user" scope="session" value="${currentUser}"/>
 <c:set var="friends" scope="session" value="${currentUser.getFriends()}"/>
+<%!
+  @Resource(name = "jdbc/ENSAMC-SocialNetwork")
+  DataSource dataSource;
 
+%>
+<%
+  fetchFriendRequests(request, dataSource);
+%>
+<c:set var="friendRequests" scope="session" value="${friendRequests}"/>
 <div class="iq-sidebar sidebar-default">
   <div id="sidebar-scrollbar">
     <nav class="iq-sidebar-menu">
       <ul id="iq-sidebar-toggle" class="iq-menu">
         <li class="active">
-          <a href="feed.jsp" class=" ">
+          <a href="index.jsp" class=" ">
             <i class="las la-newspaper"></i><span>Newsfeed</span>
           </a>
         </li>
@@ -34,7 +44,7 @@
   <div class="iq-navbar-custom">
     <nav class="navbar navbar-expand-lg navbar-light p-0">
       <div class="iq-navbar-logo d-flex justify-content-between">
-        <a href="feed.jsp">
+        <a href="index.jsp">
           <img src="../assets/images/logo.png" class="img-fluid" alt=""/>
           <span>SocialV</span>
         </a>
@@ -45,11 +55,13 @@
         </div>
       </div>
       <div class="iq-search-bar device-search">
-        <form action="#" class="searchbox">
+        <form action="${pageContext.request.contextPath}/SearchServlet" method="post" class="searchbox">
           <a class="search-link" href="#"
           ><i class="ri-search-line"></i
           ></a>
+          <input type="hidden" name="operation" value="SEARCH">
           <input
+              name="searchTerm"
               type="text"
               class="text search-input"
               placeholder="Search here..."
@@ -70,7 +82,7 @@
         <ul class="navbar-nav ms-auto navbar-list">
           <li>
             <a
-                href="dashboard/index.html"
+                href="index.jsp"
                 class="d-flex align-items-center"
             >
               <i class="ri-home-line"></i>
@@ -97,125 +109,53 @@
                   <div class="header-title">
                     <h5 class="mb-0 text-white">Friend Request</h5>
                   </div>
-                  <small class="badge bg-light text-dark">4</small>
+                  <small class="badge bg-light text-dark"><c:out value="${friendRequests.size()}"/></small>
                 </div>
                 <div class="card-body p-0">
-                  <div class="iq-friend-request">
-                    <div
-                        class="iq-sub-card iq-sub-card-big d-flex align-items-center justify-content-between"
-                    >
-                      <div class="d-flex align-items-center">
-                        <img
-                            class="avatar-40 rounded"
-                            src="../assets/images/user/01.jpg"
-                            alt=""
-                        />
-                        <div class="ms-3">
-                          <h6 class="mb-0">Jaques Amole</h6>
-                          <p class="mb-0">40 friends</p>
+                  <c:if test="${not empty friendRequests}">
+                    <c:forEach var="friendRequest" items="${friendRequests}">
+                      <!-- Friend Request Item -->
+                      <div class="iq-friend-request">
+                        <div
+                            class="iq-sub-card iq-sub-card-big d-flex align-items-center justify-content-between"
+                        >
+                          <div class="d-flex align-items-center">
+                            <img
+                                class="avatar-40 rounded"
+                                src="<c:out value="${friendRequest.getSender().getProfilePicture()}" />"
+                                alt=""
+                            />
+                            <div class="ms-3">
+                              <h6 class="mb-0"><c:out value="${friendRequest.getSender().getFirstName()}"/>
+                                <c:out value="${friendRequest.getSender().getLastName()}"/></h6>
+                                <%--                              <p class="mb-0">3 friends</p>--%>
+                            </div>
+                          </div>
+                          <div class="d-flex align-items-center">
+                            <form method="post" action="${pageContext.request.contextPath}/FriendshipServlet">
+                              <input type="hidden" name="operation" value="ACCEPT">
+                              <input type="hidden" name="user_id"
+                                     value="<c:out value="${friendRequest.getSender().getId()}"/>">
+                              <button
+                                  type="submit"
+                                  class="me-3 btn btn-primary rounded"> Confirm
+                              </button>
+                            </form>
+                            <form method="post" action="${pageContext.request.contextPath}/FriendshipServlet">
+                              <input type="hidden" name="operation" value="CANCEL">
+                              <input type="hidden" name="user_id"
+                                     value="<c:out value="${friendRequest.getSender().getId()}"/>">
+                              <button
+                                  type="submit"
+                                  class="me-3 btn btn-secondary rounded"> Delete Request
+                              </button>
+                            </form>
+                          </div>
                         </div>
                       </div>
-                      <div class="d-flex align-items-center">
-                        <a
-                            href="javascript:void();"
-                            class="me-3 btn btn-primary rounded"
-                        >Confirm</a
-                        >
-                        <a
-                            href="javascript:void();"
-                            class="me-3 btn btn-secondary rounded"
-                        >Delete Request</a
-                        >
-                      </div>
-                    </div>
-                  </div>
-                  <div class="iq-friend-request">
-                    <div
-                        class="iq-sub-card iq-sub-card-big d-flex align-items-center justify-content-between"
-                    >
-                      <div class="d-flex align-items-center">
-                        <img
-                            class="avatar-40 rounded"
-                            src="../assets/images/user/02.jpg"
-                            alt=""
-                        />
-                        <div class="ms-3">
-                          <h6 class="mb-0">Lucy Tania</h6>
-                          <p class="mb-0">12 friends</p>
-                        </div>
-                      </div>
-                      <div class="d-flex align-items-center">
-                        <a
-                            href="javascript:void();"
-                            class="me-3 btn btn-primary rounded"
-                        >Confirm</a
-                        >
-                        <a
-                            href="javascript:void();"
-                            class="me-3 btn btn-secondary rounded"
-                        >Delete Request</a
-                        >
-                      </div>
-                    </div>
-                  </div>
-                  <div class="iq-friend-request">
-                    <div
-                        class="iq-sub-card iq-sub-card-big d-flex align-items-center justify-content-between"
-                    >
-                      <div class="d-flex align-items-center">
-                        <img
-                            class="avatar-40 rounded"
-                            src="../assets/images/user/03.jpg"
-                            alt=""
-                        />
-                        <div class="ms-3">
-                          <h6 class="mb-0">Manny Petty</h6>
-                          <p class="mb-0">3 friends</p>
-                        </div>
-                      </div>
-                      <div class="d-flex align-items-center">
-                        <a
-                            href="javascript:void();"
-                            class="me-3 btn btn-primary rounded"
-                        >Confirm</a
-                        >
-                        <a
-                            href="javascript:void();"
-                            class="me-3 btn btn-secondary rounded"
-                        >Delete Request</a
-                        >
-                      </div>
-                    </div>
-                  </div>
-                  <div class="iq-friend-request">
-                    <div
-                        class="iq-sub-card iq-sub-card-big d-flex align-items-center justify-content-between"
-                    >
-                      <div class="d-flex align-items-center">
-                        <img
-                            class="avatar-40 rounded"
-                            src="../assets/images/user/04.jpg"
-                            alt=""
-                        />
-                        <div class="ms-3">
-                          <h6 class="mb-0">Marsha Mello</h6>
-                          <p class="mb-0">15 friends</p>
-                        </div>
-                      </div>
-                      <div class="d-flex align-items-center">
-                        <a
-                            href="javascript:void();"
-                            class="me-3 btn btn-primary rounded"
-                        >Confirm</a
-                        >
-                        <a
-                            href="javascript:void();"
-                            class="me-3 btn btn-secondary rounded"
-                        >Delete Request</a
-                        >
-                      </div>
-                    </div>
-                  </div>
+                      <!-- END Friend Request Item -->
+                    </c:forEach>
+                  </c:if>
                   <div class="text-center">
                     <a href="#" class="btn text-primary"
                     >View More Request</a

@@ -70,7 +70,7 @@ public class RegisterServlet extends HttpServlet {
             request.getSession().setAttribute("currentUser", user);
 
 //            PostService.fetchFriendPosts(request,dataSource);
-            response.sendRedirect(request.getContextPath() + "/home/feed.jsp");
+            response.sendRedirect(request.getContextPath() + "/home/index.jsp");
         } catch (Exception e) {
             throw new ServletException(e);
         }

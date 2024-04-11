@@ -1,5 +1,6 @@
 package ensamc.mbdio.tp2_jee.dao;
 
+import ensamc.mbdio.tp2_jee.model.Friendship;
 import ensamc.mbdio.tp2_jee.model.FriendshipState;
 import ensamc.mbdio.tp2_jee.model.User;
 
@@ -8,7 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-class FriendshipDAO {
+public class FriendshipDAO {
     private DataSource dataSource;
 
     public FriendshipDAO(DataSource theDataSource) {
@@ -113,10 +114,14 @@ class FriendshipDAO {
         ResultSet resultSet = null;
         try {
             connection = dataSource.getConnection();
-            String sql = "DELETE FROM Friendship WHERE id_sender = ? AND id_receiver = ?";
+            String sql = "DELETE FROM Friendship " +
+                    "WHERE (id_sender = ? AND id_receiver = ?)" +
+                    "OR (id_sender = ? AND id_receiver = ?)";
             statement = connection.prepareStatement(sql);
             statement.setInt(1, sender.getId());
             statement.setInt(2, receiver.getId());
+            statement.setInt(3, receiver.getId());
+            statement.setInt(4, sender.getId());
             int rowsAffected = statement.executeUpdate();
 
             return rowsAffected > 0;
@@ -135,11 +140,15 @@ class FriendshipDAO {
         ResultSet resultSet = null;
         try {
             connection = dataSource.getConnection();
-            String sql = "UPDATE Friendship SET state = ? WHERE id_sender = ? AND id_receiver = ?";
+            String sql = "UPDATE Friendship SET state = ? " +
+                    "WHERE (id_sender = ? AND id_receiver = ?) " +
+                    "OR (id_sender = ? AND id_receiver = ?)";
             statement = connection.prepareStatement(sql);
             statement.setString(1, state.name());
             statement.setInt(2, sender.getId());
             statement.setInt(3, receiver.getId());
+            statement.setInt(4, receiver.getId());
+            statement.setInt(5, sender.getId());
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;
 
@@ -149,6 +158,44 @@ class FriendshipDAO {
         } finally {
             close(connection, statement, resultSet);
         }
+    }
+
+    public List<Friendship> getFriendships(User currentUser) {
+        List<Friendship> friendships = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        UserDAO userDAO = new UserDAO(dataSource);
+
+        String sql = "SELECT * FROM " +
+                "Friendship f where " +
+                " f.id_receiver=? " +
+                "and f.state='PENDING'; ";
+
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement(sql);
+
+            statement.setInt(1, currentUser.getId());
+
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int idReceiver = resultSet.getInt("id_sender");
+                String state = resultSet.getString("state");
+
+                Friendship friendship = new Friendship();
+                friendship.setSender(userDAO.getUser(idReceiver));
+                friendship.setReceiver(currentUser);
+                friendship.setState(FriendshipState.valueOf(state));
+
+                friendships.add(friendship);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(connection, statement, resultSet);
+        }
+        return friendships;
     }
 
     private void close(Connection connection, Statement statement, ResultSet resultSet) {

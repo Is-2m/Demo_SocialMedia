@@ -36,4 +36,13 @@ public class Friendship {
     public void setState(FriendshipState state) {
         this.state = state;
     }
+
+    @Override
+    public String toString() {
+        return "Friendship{" +
+                "sender=" + sender +
+                ", receiver=" + receiver +
+                ", state=" + state +
+                '}';
+    }
 }
