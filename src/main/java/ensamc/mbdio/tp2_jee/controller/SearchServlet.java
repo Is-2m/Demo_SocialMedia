@@ -19,9 +19,9 @@ import java.util.List;
 
 public class SearchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+
     @Resource(name = "jdbc/ENSAMC-SocialNetwork")
     private DataSource dataSource;
-
     private UserDAO userDAO;
 
     @Override

@@ -42,7 +42,6 @@ public class LoginServlet extends HttpServlet {
 //            check if the user is already logged in
         User currentUser = (User) req.getSession().getAttribute("currentUser");
         if (currentUser != null) {
-//            PostService.fetchFriendPosts(req,dataSource);
             resp.sendRedirect(req.getContextPath() + "/home/index.jsp");
         } else {
             resp.sendRedirect(req.getContextPath() + "/login.jsp");

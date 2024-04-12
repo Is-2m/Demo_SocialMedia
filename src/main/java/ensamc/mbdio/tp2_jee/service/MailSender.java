@@ -119,4 +119,37 @@ public class MailSender {
                 "</html>\n";
     }
 
+    public static String passwordResetEmail(String userName, String resetLink, int expiryDuration) {
+        return "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <style>\n" +
+                "        body { font-family: Arial, sans-serif; }\n" +
+                "        .email-container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }\n" +
+                "        .email-heading { font-size: 18px; margin-bottom: 20px; }\n" +
+                "        .email-body { margin-bottom: 20px; }\n" +
+                "        .email-cta { text-align: center; }\n" +
+                "        .email-footer { font-size: 16px; text-align: center; margin-top: 20px; color: #888; }\n" +
+                "    </style>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <div class=\"email-container\">\n" +
+                "        <div class=\"email-heading\">Reset Your Password for ENSAMC Social Network</div>\n" +
+                "        <div class=\"email-body\">\n" +
+                "            Hi " + userName + ",<br><br>\n" +
+                "            We received a request to reset your password for your account on ENSAMC Social Network.<br><br>\n" +
+                "            If you requested this password reset, please click the link below to set a new password:<br><br>\n" +
+                "            <a href=\"" + resetLink + "\">Reset Password Link</a><br><br>\n" +
+                "            This link will expire in " + expiryDuration + " hours. If you did not request a password reset, you can safely ignore this email.<br><br>\n" +
+                "            If you're having trouble resetting your password, please contact us at the nearest train station :/ <br><br>\n" +
+                "            Thanks,<br>\n" +
+                "            The ENSAMC Social Network Team\n" +
+                "        </div>\n" +
+                "        <div class=\"email-footer\">\n" +
+                "        </div>\n" +
+                "    </div>\n" +
+                "</body>\n" +
+                "</html>\n";
+    }
+
 }

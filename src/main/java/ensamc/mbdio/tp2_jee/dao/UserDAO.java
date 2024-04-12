@@ -52,8 +52,8 @@ public class UserDAO {
                 String favoriteQuote = myRs.getString("favorite_quote");
                 List<User> friends = friendshipDAO.getFriends(id);
 
-                user = new User(id, firstName, lastName, login, pass, phone, address, birthDate,
-                        gender, aboutMe, otherName, favoriteQuote, friends, profilePicture);
+                user = new User(id, firstName, lastName, login, pass, birthDate, phone, gender,
+                        address, aboutMe, otherName, favoriteQuote, friends, profilePicture);
             }
             return user;
         } catch (Exception e) {
@@ -87,7 +87,6 @@ public class UserDAO {
                 String firstName = myRs.getString("first_name");
                 String lastName = myRs.getString("last_name");
                 String login = myRs.getString("email");
-                String pass = myRs.getString("pass");
                 String phone = myRs.getString("phone");
                 String address = myRs.getString("address");
                 String birthDate = myRs.getString("birth_date");
@@ -97,8 +96,19 @@ public class UserDAO {
                 String favoriteQuote = myRs.getString("favorite_quote");
 //                List<User> friends = friendshipDAO.getFriends(userID);
 
-                user = new User(id, firstName, lastName, login, pass, phone, address, birthDate,
-                        gender, aboutMe, otherName, favoriteQuote, profilePicture);
+                user = new User();
+                user.setId(id);
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
+                user.setEmail(login);
+                user.setPhone(phone);
+                user.setAddress(address);
+                user.setBirthDate(birthDate);
+                user.setGender(gender);
+                user.setAboutMe(aboutMe);
+                user.setOtherName(otherName);
+                user.setFavoriteQuote(favoriteQuote);
+                user.setProfilePicture(profilePicture);
             }
 
             return user;
@@ -148,7 +158,7 @@ public class UserDAO {
         }
     }
 
-    public void updateUser(User user) {
+    public boolean updateUser(User user) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -158,7 +168,7 @@ public class UserDAO {
             // create sql for update
             String sql = "update User "
                     + "set profile_picture=?,first_name=?, last_name=?, email=?, pass=?, phone=?," +
-                    "address=?, birth_date=?, gender=?, about_me=?, other_name=?, favorite_quote=? "
+                    "address=?, birth_date=?, gender=?  "
                     + "where id=?";
             statement = connection.prepareStatement(sql);
             // set the param values for the student
@@ -177,7 +187,7 @@ public class UserDAO {
             statement.setInt(13, user.getId()); // Assuming your User class has a getIdUser() method
 
             // execute sql insert
-            statement.execute();
+            return statement.execute();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -185,10 +195,11 @@ public class UserDAO {
             // Close resources
             close(connection, statement, resultSet);
         }
+        return false;
     }
 
 
-    public void updatePassword(User user) {
+    public boolean updatePassword(User user) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -204,7 +215,7 @@ public class UserDAO {
             statement.setString(1, user.getPassword());
             statement.setInt(2, user.getId());
             // execute sql insert
-            statement.execute();
+            return statement.execute();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -212,6 +223,7 @@ public class UserDAO {
             // Close resources
             close(connection, statement, resultSet);
         }
+        return false;
     }
 
     public List<UserDTO> searchUsersWithFriendships(User currentUser, String searchTerm) {
@@ -304,5 +316,62 @@ public class UserDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean updateAboutMe(User user) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            // get db connection
+            connection = dataSource.getConnection();
+            // create sql for update
+            String sql = "update User "
+                    + "set about_me=?, other_name=?, favorite_quote=? "
+                    + "where id=?";
+            statement = connection.prepareStatement(sql);
+            // set the param values for the student
+            statement.setString(1, user.getAboutMe());
+            statement.setString(2, user.getOtherName());
+            statement.setString(3, user.getFavoriteQuote());
+            statement.setInt(4, user.getId());
+
+            // execute sql insert
+            return statement.execute();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources
+            close(connection, statement, resultSet);
+        }
+        return false;
+    }
+
+    public User getUserByEmail(String email) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = dataSource.getConnection();
+            String sql = "SELECT * FROM User WHERE email = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, email);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                User user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setFirstName(resultSet.getString("first_name"));
+                user.setLastName(resultSet.getString("last_name"));
+                user.setEmail(resultSet.getString("email"));
+                return user;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(connection, statement, resultSet);
+        }
+        return null;
     }
 }

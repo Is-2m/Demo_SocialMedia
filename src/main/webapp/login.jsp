@@ -1,12 +1,18 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
+<%
+    if (session.getAttribute("currentUser") != null){
+        response.sendRedirect("home/index.jsp");
+    }
+%>
 
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>SocialV | Responsive Bootstrap 4 Admin Dashboard Template</title>
+    <title>ENSAMC | Social Network</title>
 
     <link rel="shortcut icon" href="assets/images/favicon.ico"/>
     <link rel="stylesheet" href="assets/css/libs.min.css">
@@ -80,7 +86,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="exampleInputPassword1">Password</label>
-                                <a href="#" class="float-end">Forgot password?</a>
+                                <a href="recover-password.jsp"" class="float-end">Forgot password?</a>
                                 <input type="password" required="required" name="password" class="form-control mb-0"
                                        id="exampleInputPassword1"
                                        placeholder="Password">

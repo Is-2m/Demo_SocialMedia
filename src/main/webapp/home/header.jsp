@@ -30,7 +30,7 @@
           </a>
         </li>
         <li class="">
-          <a href="app/profile.html" class=" ">
+          <a href="profile.jsp" class=" ">
             <i class="las la-user"></i><span>Profile</span>
           </a>
         </li>
@@ -46,7 +46,7 @@
       <div class="iq-navbar-logo d-flex justify-content-between">
         <a href="index.jsp">
           <img src="../assets/images/logo.png" class="img-fluid" alt=""/>
-          <span>SocialV</span>
+          <span>ENSAMC SN</span>
         </a>
         <div class="iq-menu-bt align-self-center">
           <div class="wrapper-menu">
@@ -117,20 +117,21 @@
                       <!-- Friend Request Item -->
                       <div class="iq-friend-request">
                         <div
-                            class="iq-sub-card iq-sub-card-big d-flex align-items-center justify-content-between"
-                        >
-                          <div class="d-flex align-items-center">
-                            <img
-                                class="avatar-40 rounded"
-                                src="<c:out value="${friendRequest.getSender().getProfilePicture()}" />"
-                                alt=""
-                            />
-                            <div class="ms-3">
-                              <h6 class="mb-0"><c:out value="${friendRequest.getSender().getFirstName()}"/>
-                                <c:out value="${friendRequest.getSender().getLastName()}"/></h6>
-                                <%--                              <p class="mb-0">3 friends</p>--%>
+                            class="iq-sub-card iq-sub-card-big d-flex align-items-center justify-content-between">
+                          <a href="${pageContext.request.contextPath}/home/users?id=<c:out value="${friendRequest.getSender().getId()}"/>">
+                            <div class="d-flex align-items-center">
+                              <img
+                                  class="avatar-40 rounded"
+                                  src="<c:out value="${friendRequest.getSender().getProfilePicture()}" />"
+                                  alt=""
+                              />
+                              <div class="ms-3">
+                                <h6 class="mb-0"><c:out value="${friendRequest.getSender().getFirstName()}"/>
+                                  <c:out value="${friendRequest.getSender().getLastName()}"/></h6>
+                                  <%--                              <p class="mb-0">3 friends</p>--%>
+                              </div>
                             </div>
-                          </div>
+                          </a>
                           <div class="d-flex align-items-center">
                             <form method="post" action="${pageContext.request.contextPath}/FriendshipServlet">
                               <input type="hidden" name="operation" value="ACCEPT">
@@ -427,7 +428,7 @@
                 </div>
                 <div class="card-body p-0">
                   <a
-                      href="app/profile.html"
+                      href="profile.jsp"
                       class="iq-sub-card iq-bg-primary-hover"
                   >
                     <div class="d-flex align-items-center">
@@ -517,20 +518,22 @@
         <div class="media-height p-3" data-scrollbar="init">
           <c:if test="${not empty friends}">
             <c:forEach var="friend" items="${friends}">
-              <div class="d-flex align-items-center mb-4">
-                <div class="iq-profile-avatar status-online">
-                  <img
-                      class="rounded-circle avatar-50"
-                      src="<c:out value="${friend.getProfilePicture()}"/>"
-                      alt=""
-                  />
+              <a href="${pageContext.request.contextPath}/home/users?id=<c:out value="${friend.getId()}"/>">
+                <div class="d-flex align-items-center mb-4">
+                  <div class="iq-profile-avatar status-online">
+                    <img
+                        class="rounded-circle avatar-50"
+                        src="<c:out value="${friend.getProfilePicture()}"/>"
+                        alt=""
+                    />
+                  </div>
+                  <div class="ms-3">
+                    <h6 class="mb-0"><c:out value="${friend.getFirstName()}"/>
+                      <c:out value="${friend.getLastName()}"/></h6>
+                    <p class="mb-0">Just Now</p>
+                  </div>
                 </div>
-                <div class="ms-3">
-                  <h6 class="mb-0"><c:out value="${friend.getFirstName()}"/>
-                    <c:out value="${friend.getLastName()}"/></h6>
-                  <p class="mb-0">Just Now</p>
-                </div>
-              </div>
+              </a>
             </c:forEach>
           </c:if>
         </div>

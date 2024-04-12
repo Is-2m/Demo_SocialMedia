@@ -20,7 +20,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
   />
-  <title>SocialV | Responsive Bootstrap 5 Admin Dashboard Template</title>
+  <title>ENSAMC | Social Network</title>
 
   <link rel="shortcut icon" href="../assets/images/favicon.ico"/>
   <link rel="stylesheet" href="../assets/css/libs.min.css"/>
@@ -60,8 +60,7 @@
           <div class="col-sm-12">
             <div
                 id="post-modal-data"
-                class="card card-block card-stretch card-height"
-            >
+                class="card card-block card-stretch card-height">
               <div class="card-header d-flex justify-content-between">
                 <div class="header-title">
                   <h4 class="card-title">Create Post</h4>
@@ -253,8 +252,8 @@
                   <div class="card-body">
                     <div class="user-post-data">
                       <div class="d-flex justify-content-between">
-                        <div class="me-3">
-                          <img class="rounded-circle img-fluid" src="<c:out value="${post.user.getProfilePicture()}"/>"
+                        <div class="me-3" style="width: 15vh; ">
+                          <img class="rounded-circle img-fluid avatar-60" src="<c:out value="${post.user.getProfilePicture()}"/>"
                                alt=""/>
                         </div>
                         <div class="w-100">
@@ -558,7 +557,7 @@
         </ul>
       </div>
       <div class="col-lg-6 d-flex justify-content-end">
-        Copyright 2020 <a href="#">SocialV</a> All Rights Reserved.
+        Copyright 2020 <a href="#">ENSAMC Social Network</a> All Rights Reserved.
       </div>
     </div>
   </div>

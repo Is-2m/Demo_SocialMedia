@@ -17,6 +17,7 @@ import java.io.IOException;
 
 public class ProfileServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
 
     @Resource(name = "jdbc/ENSAMC-SocialNetwork")
     private DataSource dataSource;
@@ -52,13 +53,33 @@ public class ProfileServlet extends HttpServlet {
                     updatePassword(req, resp);
                     break;
 
-                case "THEME":
-                    updateTheme(req, resp);
+                case "ABOUT_ME":
+                    updateAboutMe(req, resp);
                     break;
             }
 
         } catch (Exception exc) {
             throw new ServletException(exc);
+        }
+    }
+
+    private void updateAboutMe(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            User currentUser = (User) req.getSession().getAttribute("currentUser");
+            String aboutMe = req.getParameter("aboutMe");
+            String otherName = req.getParameter("otherName");
+            String favoriteQuote = req.getParameter("favoriteQuote");
+
+            currentUser.setAboutMe(aboutMe);
+            currentUser.setOtherName(otherName);
+            currentUser.setFavoriteQuote(favoriteQuote);
+
+            if (userDbUtil.updateAboutMe(currentUser)) {
+                req.getSession().setAttribute("currentUser", currentUser);
+            }
+            resp.sendRedirect(req.getContextPath() + "/home/edit-profile.jsp");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -69,16 +90,20 @@ public class ProfileServlet extends HttpServlet {
             String lastName = req.getParameter("lastName");
             String phone = req.getParameter("phone");
             String birthDate = req.getParameter("birthDate");
+            String gender = req.getParameter("gender");
+            String address = req.getParameter("address");
 
-            currentUser.setFirstName(firstName);
-            currentUser.setLastName(lastName);
-            currentUser.setPhone(phone);
-            currentUser.setBirthDate(birthDate);
+            currentUser.setFirstName(firstName.isEmpty() ? currentUser.getFirstName() : firstName);
+            currentUser.setLastName(lastName.isEmpty() ? currentUser.getLastName() : lastName);
+            currentUser.setPhone(phone.isEmpty() ? currentUser.getPhone() : phone);
+            currentUser.setBirthDate(birthDate.isEmpty() ? currentUser.getBirthDate() : birthDate);
+            currentUser.setGender(gender.isEmpty() ? currentUser.getGender() : gender);
+            currentUser.setAddress(address);
 
-            req.getSession().setAttribute("currentUser", currentUser);
-            userDbUtil.updateUser(currentUser);
-
-            resp.sendRedirect("edit_profile.jsp");
+            if (userDbUtil.updateUser(currentUser)) {
+                req.getSession().setAttribute("currentUser", currentUser);
+            }
+            resp.sendRedirect(req.getContextPath() + "/home/edit-profile.jsp");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -90,40 +115,25 @@ public class ProfileServlet extends HttpServlet {
             String password = req.getParameter("oldPassword");
             String newPassword = req.getParameter("newPassword");
             if (password == null || password.isEmpty()) {
-                resp.sendRedirect("edit_password.jsp");
+                resp.sendRedirect(req.getContextPath() + "/home/edit-profile.jsp");
                 return;
             }
             if (!currentUser.getPassword().equals(password)) {
-                resp.sendRedirect("edit_password.jsp");
+                resp.sendRedirect(req.getContextPath() + "/home/edit-profile.jsp");
                 return;
             }
 
             currentUser.setPassword(newPassword);
 
-            req.getSession().setAttribute("currentUser", currentUser);
-
-            userDbUtil.updatePassword(currentUser);
-
-            resp.sendRedirect("edit_profile.jsp");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void updateTheme(HttpServletRequest req, HttpServletResponse resp) {
-        try {
-            String theme = req.getParameter("theme");
-
-            //save the theme in cookies
-            if (theme != null) {
-                Cookie theCookie = new Cookie("myApp.currentTheme", theme);
-                theCookie.setMaxAge(3600 * 24 * 365);
-                resp.addCookie(theCookie);
+            if (userDbUtil.updatePassword(currentUser)) {
+                req.getSession().setAttribute("currentUser", currentUser);
             }
 
-            resp.sendRedirect("edit_profile.jsp");
+            resp.sendRedirect(req.getContextPath() + "/home/edit-profile.jsp");
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
 }

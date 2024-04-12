@@ -4,8 +4,6 @@ import ensamc.mbdio.tp2_jee.model.Post;
 import ensamc.mbdio.tp2_jee.model.ResourceModel;
 import ensamc.mbdio.tp2_jee.model.User;
 
-import jakarta.annotation.Resource;
-
 import javax.sql.DataSource;
 import java.sql.*;
 
@@ -116,7 +114,7 @@ public class PostDAO {
         }
     }
 
-    public List<Post> getPostByUser(User poster) {
+    public List<Post> getPostsByUser(User poster) {
         List<Post> posts = new ArrayList<>();
         Connection myConn = null;
         PreparedStatement myStmt = null;
@@ -186,11 +184,11 @@ public class PostDAO {
     public List<Post> getFriendPosts(User user) {
         List<Post> friendPosts = new ArrayList<>();
         for (User friend : user.getFriends()) {
-            List<Post> lst = getPostByUser(friend);
+            List<Post> lst = getPostsByUser(friend);
             if (lst != null && !lst.isEmpty())
                 friendPosts.addAll(lst);
         }
-        friendPosts.addAll(getPostByUser(user));
+        friendPosts.addAll(getPostsByUser(user));
 
         return friendPosts;
     }

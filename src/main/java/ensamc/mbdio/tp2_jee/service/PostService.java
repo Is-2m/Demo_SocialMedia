@@ -3,7 +3,6 @@ package ensamc.mbdio.tp2_jee.service;
 import ensamc.mbdio.tp2_jee.dao.PostDAO;
 import ensamc.mbdio.tp2_jee.model.Post;
 import ensamc.mbdio.tp2_jee.model.User;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 
 import javax.sql.DataSource;
@@ -27,5 +26,19 @@ public class PostService {
             }
         });
         req.getSession().setAttribute("friendsPosts", posts);
+    }
+
+    public static void getUserPosts(HttpServletRequest req, DataSource dataSource){
+        PostDAO postDAO = new PostDAO(dataSource);
+        User user = (User) req.getSession().getAttribute("currentUser");
+        List<Post> posts = postDAO.getPostsByUser(user);
+        Collections.sort(posts, new Comparator<Post>() {
+            public int compare(Post o1, Post o2) {
+                if (Objects.equals(o1.getDate(), o2.getDate()))
+                    return 0;
+                return o1.getDate() < o2.getDate() ? 1 : -1;
+            }
+        });
+        req.getSession().setAttribute("userPosts", posts);
     }
 }

@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>SocialV | Responsive Bootstrap 5 Admin Dashboard Template</title>
+  <title>ENSAMC | Social Network</title>
 
   <link rel="shortcut icon" href="../assets/images/favicon.ico"/>
   <link rel="stylesheet" href="../assets/css/libs.min.css">
@@ -149,7 +149,7 @@
         </ul>
       </div>
       <div class="col-lg-6 d-flex justify-content-end">
-        Copyright 2020 <a href="#">SocialV</a> All Rights Reserved.
+        Copyright 2020 <a href="#">ENSAMC Social Network</a> All Rights Reserved.
       </div>
     </div>
   </div>
