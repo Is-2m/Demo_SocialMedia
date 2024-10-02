@@ -29,7 +29,7 @@ public class PostDAO {
         ResultSet resultSet = null;
         try {
             connection = dataSource.getConnection();
-            String sql = "INSERT INTO Post (id_user, date) VALUES (?, ?)";
+            String sql = "INSERT INTO \"post\" (id_user, date) VALUES (?, ?)";
 
             statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             statement.setInt(1, post.getUser().getId());
@@ -66,7 +66,7 @@ public class PostDAO {
         ResultSet resultSet = null;
         try {
             connection = dataSource.getConnection();
-            String sql = "DELETE FROM Post WHERE id = ?";
+            String sql = "DELETE FROM \"post\" WHERE id = ?";
             statement = connection.prepareStatement(sql);
             statement.setInt(1, post.getId());
             int rowsAffected = statement.executeUpdate();
@@ -90,7 +90,7 @@ public class PostDAO {
             // get a connection
             myConn = dataSource.getConnection();
             // create sql statement
-            String sql = "select * from Post where id=?";
+            String sql = "select * from \"post\" where id=?";
             myStmt = myConn.prepareStatement(sql);
             // set params
             myStmt.setInt(1, id);
@@ -121,7 +121,7 @@ public class PostDAO {
         ResultSet myRs = null;
         try {
             myConn = dataSource.getConnection();
-            String sql = "select * from Post where id_user=?";
+            String sql = "select * from \"post\" where id_user=?";
             myStmt = myConn.prepareStatement(sql);
             myStmt.setInt(1, poster.getId());
             myRs = myStmt.executeQuery();
@@ -150,8 +150,8 @@ public class PostDAO {
         ResultSet resultSet = null;
 
         String sql = "SELECT p.* " +
-                "FROM Post p " +
-                "INNER JOIN Friendship f ON (p.id_user = f.id_sender OR p.id_user = f.id_receiver) " +
+                "FROM \"post\" p " +
+                "INNER JOIN \"friendship\" f ON (p.id_user = f.id_sender OR p.id_user = f.id_receiver) " +
                 "WHERE (f.id_sender = ? OR f.id_receiver = ?) AND f.state = 'APPROVED'";
 
         try {

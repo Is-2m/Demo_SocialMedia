@@ -22,7 +22,7 @@ public class FriendshipDAO {
         ResultSet resultSet = null;
         try {
             connection = dataSource.getConnection();
-            String sql = "INSERT INTO Friendship (id_sender, id_receiver, state) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO \"friendship\" (id_sender, id_receiver, state) VALUES (?, ?, ?)";
             statement = connection.prepareStatement(sql);
             statement.setInt(1, sender.getId());
             statement.setInt(2, receiver.getId());
@@ -46,8 +46,8 @@ public class FriendshipDAO {
         ResultSet resultSet = null;
 
         String sql = "SELECT u.* " +
-                "FROM User u " +
-                "INNER JOIN Friendship f ON (u.id = f.id_sender OR u.id = f.id_receiver) " +
+                "FROM \"User\" u " +
+                "INNER JOIN \"friendship\" f ON (u.id = f.id_sender OR u.id = f.id_receiver) " +
                 "WHERE (f.id_sender = ? OR f.id_receiver = ?) AND f.state = 'APPROVED'";
 
         try {
@@ -114,7 +114,7 @@ public class FriendshipDAO {
         ResultSet resultSet = null;
         try {
             connection = dataSource.getConnection();
-            String sql = "DELETE FROM Friendship " +
+            String sql = "DELETE FROM \"friendship\" " +
                     "WHERE (id_sender = ? AND id_receiver = ?)" +
                     "OR (id_sender = ? AND id_receiver = ?)";
             statement = connection.prepareStatement(sql);
@@ -140,7 +140,7 @@ public class FriendshipDAO {
         ResultSet resultSet = null;
         try {
             connection = dataSource.getConnection();
-            String sql = "UPDATE Friendship SET state = ? " +
+            String sql = "UPDATE \"friendship\" SET state = ? " +
                     "WHERE (id_sender = ? AND id_receiver = ?) " +
                     "OR (id_sender = ? AND id_receiver = ?)";
             statement = connection.prepareStatement(sql);
@@ -168,7 +168,7 @@ public class FriendshipDAO {
         UserDAO userDAO = new UserDAO(dataSource);
 
         String sql = "SELECT * FROM " +
-                "Friendship f where " +
+                "\"friendship\" f where " +
                 " f.id_receiver=? " +
                 "and f.state='PENDING'; ";
 

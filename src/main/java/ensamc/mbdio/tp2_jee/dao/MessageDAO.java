@@ -23,7 +23,7 @@ public class MessageDAO {
         boolean result = false;
         try {
             connection = dataSource.getConnection();
-            String sql = "INSERT INTO Message (id, content) VALUES (?, ?)";
+            String sql = "INSERT INTO \"message\" (id, content) VALUES (?, ?)";
             statement = connection.prepareStatement(sql);
             statement.setInt(1, resourceId);
             statement.setString(2, message.getContent());
@@ -45,7 +45,7 @@ public class MessageDAO {
         Message message = null;
         try {
             connection = dataSource.getConnection();
-            String sql = "SELECT * FROM Message WHERE id = ?";
+            String sql = "SELECT * FROM \"message\" WHERE id = ?";
             statement = connection.prepareStatement(sql);
             statement.setInt(1, messageId);
             resultSet = statement.executeQuery();

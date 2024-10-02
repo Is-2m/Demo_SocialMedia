@@ -82,12 +82,12 @@
                                 <label class="form-label" for="exampleInputEmail1">Email address</label>
                                 <input type="email" class="form-control mb-0"
                                        required="required"
-                                       name="email" id="exampleInputEmail1" placeholder="Enter email">
+                                       name="email" id="exampleInputEmail1" value="test-user@example.com" placeholder="Enter email">
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="exampleInputPassword1">Password</label>
-                                <a href="recover-password.jsp"" class="float-end">Forgot password?</a>
-                                <input type="password" required="required" name="password" class="form-control mb-0"
+                                <a href="recover-password.jsp" class="float-end">Forgot password?</a>
+                                <input type="password" required="required" value="passwordy" name="password" class="form-control mb-0"
                                        id="exampleInputPassword1"
                                        placeholder="Password">
                             </div>

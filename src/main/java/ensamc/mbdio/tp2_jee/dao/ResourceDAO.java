@@ -27,7 +27,7 @@ public class ResourceDAO {
         ResultSet resultSet = null;
         try {
             connection = dataSource.getConnection();
-            String sql = "INSERT INTO Resource (id_post, name, type) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO \"resource\" (id_post, name, type) VALUES (?, ?, ?)";
 
             statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             statement.setInt(1, postId);
@@ -74,7 +74,7 @@ public class ResourceDAO {
         ResultSet resultSet = null;
         try {
             connection = dataSource.getConnection();
-            String sql = "SELECT * FROM Resource WHERE id_post = ?";
+            String sql = "SELECT * FROM \"resource\" WHERE id_post = ?";
 
             statement = connection.prepareStatement(sql);
             statement.setInt(1, postId);

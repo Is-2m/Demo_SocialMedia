@@ -28,7 +28,7 @@ public class UserDAO {
             // get a connection
             myConn = dataSource.getConnection();
             // create sql statement
-            String sql = "select * from User where email=? and pass=?";
+            String sql = "select * from \"User\" where email=? and pass=?";
             myStmt = myConn.prepareStatement(sql);
             // set params
             myStmt.setString(1, email);
@@ -74,7 +74,7 @@ public class UserDAO {
             // get a connection
             myConn = dataSource.getConnection();
             // create sql statement
-            String sql = "select * from User where id=?";
+            String sql = "select * from \"User\" where id=?";
             myStmt = myConn.prepareStatement(sql);
             // set params
             myStmt.setInt(1, userID);
@@ -129,7 +129,7 @@ public class UserDAO {
             // get db connection
             connection = dataSource.getConnection();
             // create sql for insert
-            String sql = "insert into User "
+            String sql = "insert into \"User\" "
                     + "(first_name, last_name, email, pass)"
                     + "values (?, ?, ?, ?)";
             statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -166,8 +166,8 @@ public class UserDAO {
             // get db connection
             connection = dataSource.getConnection();
             // create sql for update
-            String sql = "update User "
-                    + "set profile_picture=?,first_name=?, last_name=?, email=?, pass=?, phone=?," +
+            String sql = "update \"User\" "
+                    + "set profile_picture=?,first_name=?, last_name=?, pass=?, phone=?," +
                     "address=?, birth_date=?, gender=?  "
                     + "where id=?";
             statement = connection.prepareStatement(sql);
@@ -175,16 +175,16 @@ public class UserDAO {
             statement.setString(1, user.getProfilePicture());
             statement.setString(2, user.getFirstName());
             statement.setString(3, user.getLastName());
-            statement.setString(4, user.getEmail());
-            statement.setString(5, user.getPassword());
-            statement.setString(6, user.getPhone());
-            statement.setString(7, user.getAddress()); // Assuming a getAddress() method in User class
-            statement.setString(8, user.getBirthDate()); // Assuming getBirthDate() returns a LocalDate object
-            statement.setString(9, user.getGender());
-            statement.setString(10, user.getAboutMe());
-            statement.setString(11, user.getOtherName());
-            statement.setString(12, user.getFavoriteQuote());
-            statement.setInt(13, user.getId()); // Assuming your User class has a getIdUser() method
+//            statement.setString(4, user.getEmail());
+            statement.setString(4, user.getPassword());
+            statement.setString(5, user.getPhone());
+            statement.setString(6, user.getAddress()); // Assuming a getAddress() method in User class
+            statement.setString(7, user.getBirthDate()); // Assuming getBirthDate() returns a LocalDate object
+            statement.setString(8, user.getGender());
+            statement.setString(9, user.getAboutMe());
+//            statement.setString(11, user.getOtherName());
+//            statement.setString(12, user.getFavoriteQuote());
+//            statement.setInt(13, user.getId()); // Assuming your User class has a getIdUser() method
 
             // execute sql insert
             return statement.execute();
@@ -207,7 +207,7 @@ public class UserDAO {
             // get db connection
             connection = dataSource.getConnection();
             // create sql for insert
-            String sql = "update User "
+            String sql = "update \"User\" "
                     + "set pass=? "
                     + "where id=?";
             statement = connection.prepareStatement(sql);
@@ -235,7 +235,7 @@ public class UserDAO {
         try {
             connection = dataSource.getConnection();
             String sql = "SELECT u.*, f.id_sender, f.id_receiver, f.state " +
-                    "FROM User u " +
+                    "FROM \"User\" u " +
                     "LEFT JOIN Friendship f ON (u.id = f.id_sender OR u.id = f.id_receiver) AND (f.id_sender = ? OR f.id_receiver = ?) " +
                     "WHERE u.last_name LIKE ? OR u.first_name LIKE ? OR u.other_name LIKE ?";
             statement = connection.prepareStatement(sql);
@@ -326,7 +326,7 @@ public class UserDAO {
             // get db connection
             connection = dataSource.getConnection();
             // create sql for update
-            String sql = "update User "
+            String sql = "update \"User\" "
                     + "set about_me=?, other_name=?, favorite_quote=? "
                     + "where id=?";
             statement = connection.prepareStatement(sql);
@@ -354,7 +354,7 @@ public class UserDAO {
         ResultSet resultSet = null;
         try {
             connection = dataSource.getConnection();
-            String sql = "SELECT * FROM User WHERE email = ?";
+            String sql = "SELECT * FROM \"User\" WHERE email = ?";
             statement = connection.prepareStatement(sql);
             statement.setString(1, email);
             resultSet = statement.executeQuery();

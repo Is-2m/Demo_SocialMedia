@@ -24,7 +24,7 @@ public class TokenDAO {
         PreparedStatement statement = null;
         try {
             connection = dataSource.getConnection();
-            String sql = "DELETE FROM Tokens WHERE token = ?";
+            String sql = "DELETE FROM \"tokens\" WHERE token = ?";
 
             statement = connection.prepareStatement(sql);
             statement.setString(1, token);
@@ -46,7 +46,7 @@ public class TokenDAO {
 
         try {
             connection = dataSource.getConnection();
-            String sql = "INSERT INTO Tokens (id_user,token, email,expiration_date) VALUES (?,?, ?,?)";
+            String sql = "INSERT INTO \"tokens\" (id_user,token, email,expiration_date) VALUES (?,?, ?,?)";
             statement = connection.prepareStatement(sql);
             statement.setInt(1, user.getId());
             statement.setString(2, token);
@@ -73,7 +73,7 @@ public class TokenDAO {
         try {
             // get db connection
             connection = dataSource.getConnection();
-            String sql = "SELECT * FROM Tokens WHERE token=?"; // Removed semicolon
+            String sql = "SELECT * FROM \"tokens\" WHERE token=?"; // Removed semicolon
 
             statement = connection.prepareStatement(sql);
 

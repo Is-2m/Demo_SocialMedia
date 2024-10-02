@@ -47,7 +47,7 @@
                               <div class="iq-friendlist-block">
                                 <div class="d-flex align-items-center justify-content-between">
                                   <div class="d-flex align-items-center">
-                                    <a href="#">
+                                    <a href="${pageContext.request.contextPath}/home/users?id=<c:out value="${person.getId()}"/>">
                                       <img src="<c:out value="${person.getProfilePicture()}"/>" alt="profile-img"
                                            class="img-fluid">
                                     </a>

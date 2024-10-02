@@ -444,7 +444,7 @@
                     </div>
                   </a>
                   <a
-                      href="app/profile-edit.html"
+                      href="edit-profile.jsp"
                       class="iq-sub-card iq-bg-warning-hover"
                   >
                     <div class="d-flex align-items-center">
@@ -460,7 +460,7 @@
                     </div>
                   </a>
                   <a
-                      href="app/account-setting.html"
+                      href="#"
                       class="iq-sub-card iq-bg-info-hover"
                   >
                     <div class="d-flex align-items-center">
@@ -476,7 +476,7 @@
                     </div>
                   </a>
                   <a
-                      href="app/privacy-setting.html"
+                      href="#"
                       class="iq-sub-card iq-bg-danger-hover"
                   >
                     <div class="d-flex align-items-center">
