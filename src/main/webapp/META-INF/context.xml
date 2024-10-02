@@ -5,7 +5,7 @@
               auth="Container" type="javax.sql.DataSource"
               maxActive="200" maxIdle="15" maxWait="10000"
               maxThreads="250"
-              username="root" password=""
-              driverClassName="com.mysql.cj.jdbc.Driver"
-              url="jdbc:mysql://localhost:3306/Jee_TP2?useSSL=false"/>
+              username="avnadmin" password="AVNS_UxAMBPAZojlt4DJlaYt"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://pg-jee-social-media-jee-social-media.c.aivencloud.com:22218/defaultdb?sslmode=require"/>
 </Context>
