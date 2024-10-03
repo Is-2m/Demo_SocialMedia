@@ -19,7 +19,7 @@ Here are some images to illustrate the project:
 * User's Feed:<br/>
 <img src="./readme_res/feed.png" alt="Feed" width="75%"/><br/>
 * Friend Requests:<br/>
-<img src="./readme_res/friend-requests.png.png" alt="Friend Requests" width="75%"/><br/>
+<img src="./readme_res/friend-requests.png" alt="Friend Requests" width="75%"/><br/>
 
 ## Technologies Used
 
