@@ -14,12 +14,12 @@ A functional social media platform prototype developed using Java EE technologie
 
 Here are some images to illustrate the project:
 
-* Login Screen:  
-![Login Screen](./readme_res/login.png)
-* User's Feed:  
-![Feed](./readme_res/feed.png)
-* Friend Requests: 
-![Friend Requests](./readme_res/friend-requests.png)
+* Login Screen:<br/>
+<img src="./readme_res/login.png" alt="Login Screen" width="75%"/><br/>
+* User's Feed:<br/>
+<img src="./readme_res/feed.png" alt="Feed" width="75%"/><br/>
+* Friend Requests:<br/>
+<img src="./readme_res/friend-requests.png.png" alt="Friend Requests" width="75%"/><br/>
 
 ## Technologies Used
 
