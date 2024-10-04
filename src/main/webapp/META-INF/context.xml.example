@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <!-- Configuration de la ressource partagée -->
+    <Resource name="jdbc/database_name"
+              auth="Container" type="javax.sql.DataSource"
+              maxActive="200" maxIdle="15" maxWait="10000"
+              maxThreads="250"
+              username="Username" password="PASSWORD"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:(postgresql|mysql)://HOST:PORT/database_name?sslmode=require"/>
+</Context>
